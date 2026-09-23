@@ -15,9 +15,9 @@ O sistema é dividido em microsserviços independentes:
 | notification | Notificações assíncronas sobre transações realizadas  | **Implementado** | (https://github.com/laressamoraes/bagual-notification) |
 
 # Arquitetura
-* 'transaction' chama 'account' via REST síncrono para processar débito/crédito;
-* 'transaction' publica eventos no Kafka ao concluir uma transação;
-* 'notification' consome esses eventos de forma assíncrona e persiste em um histórico de notificações.
+* `transaction` chama 'account' via REST síncrono para processar débito/crédito;
+* `transaction` publica eventos no Kafka ao concluir uma transação;
+* `notification` consome esses eventos de forma assíncrona e persiste em um histórico de notificações.
 
 # Tecnologias
 - Java 21 + Spring Boot 3;
@@ -28,7 +28,7 @@ O sistema é dividido em microsserviços independentes:
 - Docker e Docker Compose.
 
 # Como executar
-Cada microsserviço tem seu próprio 'docker-compose.yml'. A ordem de subida importa, já que o Kafka está definido no 'transaction'.
+Cada microsserviço tem seu próprio `docker-compose.yml`. A ordem de subida importa, já que o Kafka está definido no 'transaction'.
 
 ```bash
 # 1. account
