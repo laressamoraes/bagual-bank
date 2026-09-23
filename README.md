@@ -8,11 +8,11 @@ Tem como objetivo aplicar os conceitos e ferramentas utilizados em sistemas corp
 
 # Microsserviços
 O sistema é dividido em microsserviços independentes:
-| SERVIÇO | RESPONSABILIDADE | STATUS | LINK |
-|---|---|---|---|
-| account      | Cadastro de contas, consulta de saldo, débito/crédito | **Implementado** | (https://github.com/laressamoraes/bagual-account)      |
-| transaction  | Depósitos, saques e transferências entre contas       | **Implementado** | (https://github.com/laressamoraes/bagual-transaction)  |
-| notification | Notificações assíncronas sobre transações realizadas  | **Implementado** | (https://github.com/laressamoraes/bagual-notification) |
+| SERVIÇO | RESPONSABILIDADE | STATUS |
+|---|---|---|
+| [account](https://github.com/laressamoraes/bagual-account)      | Cadastro de contas, consulta de saldo, débito/crédito      | **Implementado** | 
+| [transaction](https://github.com/laressamoraes/bagual-transaction)  | Depósitos, saques e transferências entre contas        | **Implementado** | 
+| [notification](https://github.com/laressamoraes/bagual-notification) | Notificações assíncronas sobre transações realizadas  | **Implementado** | 
 
 # Arquitetura
 * `transaction` chama 'account' via REST síncrono para processar débito/crédito;
