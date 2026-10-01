@@ -21,11 +21,18 @@ O sistema é dividido em microsserviços independentes:
 * `notification` consome esses eventos de forma assíncrona e persiste em um histórico de notificações.
 
 ## Tecnologias
+**Microsserviços:**
 - Java 21 + Spring Boot 3;
 - Maven;
 - PostgreSQL + Flyway;
 - Apache Kafka;
-- JUnit 5, Mockito e AssertJ;
+- JUnit 5, Mockito e AssertJ.
+
+**Autenticação:**
+- Keycloak (OAuth2/JWT);
+- PostgreSQL.
+
+**Infraestrutura:**
 - Docker e Docker Compose.
 
 ## Como executar
