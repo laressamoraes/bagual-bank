@@ -10,10 +10,10 @@ Tem como objetivo aplicar os conceitos e ferramentas utilizados em sistemas corp
 O sistema é dividido em microsserviços independentes:
 | SERVIÇO | RESPONSABILIDADE | STATUS |
 |---|---|---|
+| [auth](https://github.com/laressamoraes/bagual-auth)                 | Autenticação e autorização do Bagual Bank             | **Implementado** |
 | [account](https://github.com/laressamoraes/bagual-account)      | Cadastro de contas, consulta de saldo, débito/crédito      | **Implementado** | 
 | [transaction](https://github.com/laressamoraes/bagual-transaction)  | Depósitos, saques e transferências entre contas        | **Implementado** | 
 | [notification](https://github.com/laressamoraes/bagual-notification) | Notificações assíncronas sobre transações realizadas  | **Implementado** | 
-| [auth](https://github.com/laressamoraes/bagual-auth)                 | Autenticação e autorização do Bagual Bank             | **Implementado** |
 
 ## Arquitetura
 * `transaction` chama `account` via REST síncrono para processar débito/crédito;
@@ -38,22 +38,44 @@ O sistema é dividido em microsserviços independentes:
 ## Como executar
 Cada microsserviço tem seu próprio `docker-compose.yml`. A ordem de subida importa, já que o Kafka está definido no `transaction`.
 
+**1. Subir o `auth` (Keycloak):**
 ```bash
-# 1. auth (Keycloak)
 cd bagual-auth
-docker compose up -d
-
-# 2. account
-cd ../bagual-account
-docker compose up -d
-
-# 3. transaction
-cd ../bagual-transaction
-docker compose up -d
-
-# 4. notification
-cd ../bagual-notification
 docker compose up -d
 ```
 
-Após subir o `auth` é necessário configurar o Keycloak manualmente na primeira vez (README do [bagual-auth](https://github.com/laressamoraes/bagual-auth/blob/main/README.md)).
+**2. Configurar o Keycloak:**
+
+Siga a seção "Configuração necessária" do README do [auth](https://github.com/laressamoraes/bagual-auth/blob/main/README.md). Ao final você terá o Client Secret do `bagual-client`.
+
+**3. Subir o `account`:**
+```bash
+cd ../bagual-account
+docker compose up --build -d
+```
+
+**4. Subir o `transaction`:**
+
+Antes, crie o arquivo `.env` na raiz do projeto com o Client Secret (use o `.env.example` como modelo):
+
+```bash
+cd ../bagual-transaction
+docker compose up --build -d
+```
+
+**5. Subir o `notification`:**
+```bash
+cd ../bagual-notification
+docker compose up --build -d
+```
+
+## Como testar a API
+Todos os endpoints exigem um token JWT emitido pelo Keycloak. O passo a passo para obter o token está no README do [auth](https://github.com/laressamoraes/bagual-auth#como-obter-um-token).
+
+Com o token em mãos, use-o como Bearer Token nas chamadas, por exemplo:
+
+* `POST http://localhost:8081/accounts` cria uma conta;
+* `POST http://localhost:8082/transactions` cria uma transação;
+* `GET http://localhost:8083/notifications` lista as notificações geradas.
+
+O token expira em cerca de 5 minutos. Se receber `401`, basta gerar outro.
