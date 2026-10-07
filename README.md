@@ -72,10 +72,50 @@ docker compose up --build -d
 ## Como testar a API
 Todos os endpoints exigem um token JWT emitido pelo Keycloak. O passo a passo para obter o token está no README do [auth](https://github.com/laressamoraes/bagual-auth#como-obter-um-token).
 
-Com o token em mãos, use-o como Bearer Token nas chamadas, por exemplo:
+**Enviando o token:** no Postman, em cada requisição, abra a aba **Authorization**, escolha **Bearer Token** e cole o `access_token`. Nas requisições com corpo, use a aba **Body** -> **raw** -> **JSON**.
 
-* `POST http://localhost:8081/accounts` cria uma conta;
-* `POST http://localhost:8082/transactions` cria uma transação;
-* `GET http://localhost:8083/notifications` lista as notificações geradas.
+O token expira a cada 5 minutos. Se receber `401`, basta gerar outro.
 
-O token expira em cerca de 5 minutos. Se receber `401`, basta gerar outro.
+**1. Criar uma conta:** (`POST http://localhost:8081/accounts`)
+```json
+{
+  "clientName": "Primeiro Cliente",
+  "document": "123.456.789-1",
+  "accountType": "CORRENTE"
+}
+```
+A resposta traz o `accountId` da conta, que será utilizado nas transações. Após ser criada, a conta tem um saldo zerado, então é necessário realizar um depósito antes de sacar, ou transferir qualquer valor.
+
+Para testar uma transferência, crie uma segunda conta com outro `document`, ou outro `accountType`: a combinação dos dois é única. Valores aceitos em `accountType`: `CORRENTE` ou `POUPANCA`.
+
+**2. Fazer um depósito:** (`POST http://localhost:8082/transactions`)
+```json
+{
+  "transactionType": "DEPOSITO",
+  "originAccountId": "<accountId da conta>",
+  "amount": 100.00
+}
+```
+
+Para um saque, troque `transactionType` por `SAQUE`. Para uma transferência, use `TRANSFERENCIA` e informe também a conta de destino:
+
+```json
+{
+  "transactionType": "TRANSFERENCIA",
+  "originAccountId": "<accountId da origem>",
+  "destinationAccountId": "<accountId do destino>",
+  "amount": 30.00
+}
+```
+
+O campo `destinationAccountId` só deve ser enviado em transferências.
+
+**3. Ver a notificação gerada:** (`GET http://localhost:8083/notifications`)
+
+Não precisa de corpo. Deve listar uma notificação para a transação do passo 2.
+
+**4. Conferir o saldo:** (`GET http://localhost:8081/accounts/<accountId>`)
+
+O campo `balance` deve refletir o depósito.
+
+
